@@ -1,0 +1,57 @@
+{
+  "name": "dsh-result-cap",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: a deterministic UTF-8 byte cap on tool results, keeping the first N bytes and carrying a sha256 of the full original so a truncated result is never mistaken for a whole one",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./cap": "./src/cap.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "LICENSE",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwilson411/dsh-result-cap.git"
+  },
+  "homepage": "https://github.com/jwilson411/dsh-result-cap#readme",
+  "bugs": {
+    "url": "https://github.com/jwilson411/dsh-result-cap/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "truncation",
+    "byte-cap",
+    "sha256",
+    "agent"
+  ],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-tools": "^0.1.1-rc.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.1-rc.2"
+  }
+}

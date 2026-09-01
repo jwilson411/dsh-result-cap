@@ -1,0 +1,54 @@
+# The dsh-result-cap bundle patch.
+#
+# `dsh plugin --profile <name> add …` installs this package into the profile,
+# sees the `dsh.bundle.patch` field in its package.json, and appends the
+# package to the profile manifest's ordered `dsh.profile.bundles` list. This
+# file is then composed as one layer over the bundles below it (dsh-base and
+# the mode bundle) and under the profile's own cordis.patch.yml.
+#
+# One insert, one row: the cap. A later layer — the profile's cordis.patch.yml
+# or a `--patch` overlay — addresses the row by its `id` to set the cap for a
+# deployment. Note that an id-targeted patch REPLACES the row's whole `config`
+# block rather than merging into it, so an override must restate every key it
+# means to keep. With one key today that is easy to miss and easy to live with;
+# it is stated here so it stays true when there are two.
+#
+# config:
+#   maxBytes  How many UTF-8 bytes of a tool result reach the conversation.
+#             Defaults to 8192. A result at or under the cap is passed through
+#             byte-for-byte unchanged. A result over it is replaced by
+#
+#               { text, truncated: true, omitted_bytes, sha256 }
+#
+#             where `text` is the first `maxBytes` bytes of the original, cut
+#             back to a character boundary so the prefix is always valid UTF-8,
+#             and `sha256` is the lowercase hex digest of the FULL original
+#             UTF-8 bytes — not of the prefix. Truncation is never silent:
+#             `truncated: true` is on every shortened result.
+#
+#             Must be an integer of at least 1. A quoted `"8192"` is accepted,
+#             because YAML quoting is an easy accident. A float, a negative, a
+#             zero, a boolean, or a word is rejected when the plugin applies
+#             rather than quietly replaced with the default — a cap nobody can
+#             see is worse than a profile that fails to start. An unknown key
+#             in this block is rejected for the same reason.
+#
+#             The environment variable DSH_RESULT_CAP_MAX_BYTES is consulted
+#             only when this block sets no `maxBytes`; a value here always
+#             wins over the environment.
+#
+# v1 caps strings. A bare string result, or the `text` field of a result object,
+# is capped. A Buffer, a typed array, an image, or any object without a string
+# `text` field passes through untouched — there is no useful prefix of a PNG.
+#
+# The row below configures nothing on purpose, so the package default of 8192
+# applies. A profile that wants a different cap states it in its own layer:
+#
+#   - id: result-cap
+#     config:
+#       maxBytes: 32000
+
+- insert:
+    - id: result-cap
+      name: dsh-result-cap
+      config: {}
